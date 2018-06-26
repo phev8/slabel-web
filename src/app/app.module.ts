@@ -16,6 +16,8 @@ import { MenuComponent } from './menu/menu.component';
 import { SessionCreatorComponent } from './session-creator/session-creator.component';
 import { SessionLabelingComponent } from './session-labeling/session-labeling.component';
 
+import { LoginGuard } from './services/login.guard';
+
 
 @NgModule({
   declarations: [
@@ -34,7 +36,7 @@ import { SessionLabelingComponent } from './session-labeling/session-labeling.co
     AppRoutingModule,
     NgbModule.forRoot()
   ],
-  providers: [],
+  providers: [LoginGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {
