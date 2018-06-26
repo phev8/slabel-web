@@ -9,9 +9,23 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { LabelsetCreatorComponent } from './labelset-creator/labelset-creator.component';
+import { LoginComponent } from './login/login.component';
+import { MenuComponent } from './menu/menu.component';
+import { SessionCreatorComponent } from './session-creator/session-creator.component';
+import { SessionLabelingComponent } from './session-labeling/session-labeling.component';
+
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DashboardComponent,
+    LabelsetCreatorComponent,
+    LoginComponent,
+    MenuComponent,
+    SessionCreatorComponent,
+    SessionLabelingComponent
   ],
   imports: [
     BrowserModule,
