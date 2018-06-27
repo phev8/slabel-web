@@ -1,3 +1,40 @@
-<p>
-    This will be the dashboard
-</p>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-6">
+            <mat-list>
+                <h3 mat-subheader>Sessions</h3>
+                <mat-list-item *ngIf="!hasSessions()">
+                    <p mat-line>No sessions available yet.</p>
+                </mat-list-item>
+                <mat-list-item *ngFor="let session of session">
+                    <mat-icon mat-list-icon>folder</mat-icon>
+                    <h4 mat-line>{{folder.name}}</h4>
+                    <p mat-line> {{folder.updated | date}} </p>
+                    <mat-divider></mat-divider>
+                </mat-list-item>
+            </mat-list>
+            <app-session-creator></app-session-creator>
+        </div>
+        <div class="col-12 col-sm-6">
+            <mat-list>
+                <h3 mat-subheader>Label Sets</h3>
+                <mat-list-item *ngIf="!hasLabelsets()">
+                    <p mat-line>No label set available yet.</p>
+                </mat-list-item>
+                <mat-list-item *ngFor="let labelset of labelsets">
+                    <mat-icon mat-list-icon>folder</mat-icon>
+                    <h4 mat-line>{{folder.name}}</h4>
+                    <p mat-line> {{folder.updated | date}} </p>
+                    <mat-divider></mat-divider>
+                </mat-list-item>
+                <a style="margin: 0 auto;" routerLink="/labelset-editor/new" mat-icon-button>
+                    <mat-icon fontSet="fas" fontIcon="fa-plus"></mat-icon>
+                    Create new label set
+                </a>
+            </mat-list>
+
+
+        </div>
+    </div>
+</div>
+

@@ -4,7 +4,9 @@ import { Injectable } from '@angular/core';
 export class DataService {
     username: string;
 
-    constructor() { }
+    constructor() {
+        this.username = "todo in dataservice";
+    }
 
     setUsername(newUser: string) {
         this.username = newUser;
