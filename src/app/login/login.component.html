@@ -1,3 +1,22 @@
-<p>
-    login works
-</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-7">
+            <div class="login mat-elevation-z2">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-8">
+                        <mat-form-field class="full-width-widget">
+                            <input matInput placeholder="Your name" [formControl]="username" (keyup.enter)="login()" required>
+                            <mat-error *ngIf="username.invalid">
+                                Please enter your name
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <button *ngIf="!username.invalid" class="full-width-widget" mat-button color="primary" (click)="login()">Login</button>
+                        <button *ngIf="username.invalid" class="full-width-widget" mat-button color="primary" disabled>Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

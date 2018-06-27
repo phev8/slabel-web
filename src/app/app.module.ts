@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material';
 
 import { SelectedMaterialModules } from './material.module';
@@ -17,6 +18,7 @@ import { SessionCreatorComponent } from './session-creator/session-creator.compo
 import { SessionLabelingComponent } from './session-labeling/session-labeling.component';
 
 import { LoginGuard } from './services/login.guard';
+import { DataService } from './services/data.service';
 
 
 @NgModule({
@@ -32,11 +34,15 @@ import { LoginGuard } from './services/login.guard';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     SelectedMaterialModules,
     AppRoutingModule,
     NgbModule.forRoot()
   ],
-  providers: [LoginGuard],
+  providers: [
+    LoginGuard,
+    DataService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

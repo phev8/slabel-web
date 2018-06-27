@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 
-// import { AuthenticationService } from './authentication.service';
+import { DataService } from './data.service';
 
 @Injectable()
 export class LoginGuard implements CanActivate {
   constructor(
-    // private authService: AuthenticationService,
+    private dataService: DataService,
     private router: Router
   ) { }
 
@@ -19,8 +19,7 @@ export class LoginGuard implements CanActivate {
   }
 
   checkLoginStatus(url: string): boolean {
-    // if (this.authService.isLoggedIn()) { return true; }
-    // TODO: check username if empty
+    if (this.dataService.isLoggedIn()) { return true; }
 
     // Store the attempted URL for redirecting
     // this.authService.redirectUrl = url;
