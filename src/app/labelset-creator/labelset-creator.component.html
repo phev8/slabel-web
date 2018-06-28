@@ -4,17 +4,34 @@
         <input matInput placeholder="Name of the label set" [(ngModel)]="labelsetName">
     </mat-form-field>
     <div class="row">
+        <div class="col-12">
         <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
             <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
             (click)="todoItemSelectionToggle(node)">
                 <div [ngClass]="{'selected-node': checklistSelection.isSelected(node), 'node': true}">
-                <button mat-icon-button disabled></button>
-                <mat-icon *ngIf="!checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-circle"></mat-icon>
-                <mat-icon *ngIf="checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-check-circle"></mat-icon>
-                {{node.description}} <small>(ID: {{node.ID}})</small>
+                    <button mat-icon-button disabled>
+                        <mat-icon *ngIf="!checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-circle"></mat-icon>
+                        <mat-icon *ngIf="checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-check-circle"></mat-icon>
+                    </button>
+
+                    {{node.description}} <small>(ID: {{node.ID}})</small>
+                    <button mat-icon-button (click)="deleteItem(node)">
+                        <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
+                    </button>
                 <!--<mat-icon *ngIf="checklistSelection.isSelected(node)" color="accent" fontSet="far" fontIcon="fa-check"></mat-icon>-->
-            </div>
+                </div>
             </mat-tree-node>
+
+            <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+                <button mat-icon-button disabled>
+                    <mat-icon fontSet="fas" fontIcon="fa-plus-circle"></mat-icon>
+                </button>
+                <mat-form-field>
+                    <input matInput #itemValue placeholder="New item...">
+                </mat-form-field>
+                <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
+            </mat-tree-node>
+
             <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
                 (click)="toggleNode(node)" >
                 <div [ngClass]="{'selected-node': descendantsPartiallySelected(node), 'node': true}">
@@ -26,9 +43,13 @@
                 </button>
                 {{node.description}} <small>(ID: {{node.ID}})</small>
                 <!--<mat-icon *ngIf="descendantsPartiallySelected(node)" color="accent" fontSet="far" fontIcon="fa-check"></mat-icon>-->
-            </div>
+                <button mat-icon-button (click)="deleteItem(node)">
+                    <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
+                </button>
+                </div>
             </mat-tree-node>
         </mat-tree>
+        </div>
     </div>
     <div class="row">
         <div class="col-8">

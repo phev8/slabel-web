@@ -85,4 +85,9 @@ export class DataService {
         });
         return children;
     }
+
+    insertLabelTemplateItem(parent: LabelTemplateNode) {
+        parent.children = new Array<LabelTemplateNode>();
+        this.dataChange.next(this.labelsetData);
+    }
 }
