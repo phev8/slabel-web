@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
 
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
@@ -27,6 +28,7 @@ const usedModules = [
     MatProgressSpinnerModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatTreeModule,
 ];
 
 @NgModule({

@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+@import "app/_theme";
+
+@import 'app/session-labeling/session-labeling.component.scss';
+
+// Using the $theme variable from the pre-built theme you can call the theming function
+@include labeling-component-theme($app-theme);
 
 .full-width-widget {
     width: 100%;
