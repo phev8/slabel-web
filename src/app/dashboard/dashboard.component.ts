@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,7 +10,18 @@ export class DashboardComponent implements OnInit {
   sessions = [];
   labelsets = [];
 
+  constructor(
+    private dataService: DataService
+  ) {}
+
   ngOnInit() {
+    this.dataService.labelsetsChanged.subscribe(
+      (data) => {
+        this.labelsets = data;
+      }
+    );
+
+    this.dataService.fetchLabelSets().subscribe();
 
   }
 

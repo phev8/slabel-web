@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material';
-
+import { HttpClientModule } from '@angular/common/http';
 import { SelectedMaterialModules } from './material.module';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -20,6 +20,9 @@ import { SessionLabelingComponent } from './session-labeling/session-labeling.co
 import { LoginGuard } from './services/login.guard';
 import { DataService } from './services/data.service';
 
+import { ApikeyInterceptor } from './services/apikey.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -33,6 +36,7 @@ import { DataService } from './services/data.service';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
@@ -42,7 +46,8 @@ import { DataService } from './services/data.service';
   ],
   providers: [
     LoginGuard,
-    DataService
+    DataService,
+    {provide: HTTP_INTERCEPTORS, useClass: ApikeyInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })

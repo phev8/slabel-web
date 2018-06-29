@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -15,7 +16,7 @@ import { LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.mod
   templateUrl: './labelset-creator.component.html',
   styleUrls: ['./labelset-creator.component.scss'],
 })
-export class LabelsetCreatorComponent {
+export class LabelsetCreatorComponent implements OnInit {
   treeControl: FlatTreeControl<LabelTemplateFlatNode>;
   treeFlattener: MatTreeFlattener<LabelTemplateNode, LabelTemplateFlatNode>;
   dataSource: MatTreeFlatDataSource<LabelTemplateNode, LabelTemplateFlatNode>;
@@ -33,6 +34,7 @@ export class LabelsetCreatorComponent {
   checklistSelection = new SelectionModel<LabelTemplateFlatNode>(false /* if multiple */);
 
   constructor(
+    private route: ActivatedRoute,
     private dataService: DataService
   ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this._getLevel,
@@ -46,13 +48,37 @@ export class LabelsetCreatorComponent {
       });
       if (data.length > 0 && data[data.length - 1].ID !== 0) {
         data.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
+      } else if (data.length <= 0) {
+        data.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
       }
       return this.dataSource.data = data;
     });
   }
 
+  ngOnInit() {
+    this.route.params.subscribe(
+      (params) => {
+        this.labelSetID = +params['id'];
+        console.log(this.labelSetID);
+        if (!this.labelSetID) {
+          console.log('TODO: create new labelset and get id');
+          this.dataService.createLabelSet().subscribe(
+            (ls) => { this.labelSetID = ls.labelset.ID; }
+          );
+        } else {
+          this.dataService.fetchLabelSet(this.labelSetID).subscribe();
+        }
+      }
+    );
+  }
+
   addNewNodeInput(node: LabelTemplateNode): LabelTemplateNode {
-    if (node.children && node.children.length === 0) {
+    if (!node.children) {
+      node.children = new Array<LabelTemplateNode>();
+      node.children.push(
+        new LabelTemplateNode({ID: 0, description: '', parent_id: node.ID, labelset_id: node.labelset_id, children: []})
+      );
+    } else if (node.children && node.children.length === 0) {
       node.children.push(
         new LabelTemplateNode({ID: 0, description: '', parent_id: node.ID, labelset_id: node.labelset_id, children: []})
       );

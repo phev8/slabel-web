@@ -1,3 +1,15 @@
+export class LabelSet {
+    ID: number;
+    name: string;
+    labels: LabelTemplateNode[];
+
+    constructor(object?: {}) {
+        if (object) {
+            Object.assign(this, object);
+        }
+    }
+}
+
 export class LabelTemplateNode {
     ID: number;
     children: LabelTemplateNode[];

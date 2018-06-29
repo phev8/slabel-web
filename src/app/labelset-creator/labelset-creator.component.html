@@ -1,10 +1,27 @@
 <div class="container-fluid component">
     <h2>Label Set Editor</h2>
-    <mat-form-field>
-        <input matInput placeholder="Name of the label set" [(ngModel)]="labelsetName">
-    </mat-form-field>
     <div class="row">
-        <div class="col-12">
+        <div class="col-8">
+            <a routerLink="/dashboard" mat-raised-button class="btn">Back</a>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-12 cont mat-elevation-z2">
+            <div class="row">
+            <div class="col-12 col-md-4">
+            <mat-form-field class="full-width-widget">
+                <input matInput placeholder="Name of the label set" [(ngModel)]="labelsetName">
+            </mat-form-field>
+            </div>
+            <div class="col-12 col-md-2">
+                <button mat-raised-button color="primary">Save</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 cont mat-elevation-z2">
+            <h3>Label Tree <mat-icon fontSet="fas" fontIcon="fa-sitemap"></mat-icon> </h3>
         <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
             <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
             (click)="todoItemSelectionToggle(node)">
@@ -53,8 +70,7 @@
     </div>
     <div class="row">
         <div class="col-8">
-            <button mat-raised-button color="primary" class="btn">Update</button>
-            <button mat-raised-button color="warn" class="btn">Cancel</button>
+            <a routerLink="/dashboard" mat-raised-button class="btn">Back</a>
         </div>
     </div>
 </div>

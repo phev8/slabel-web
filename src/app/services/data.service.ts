@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
-import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+
+import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
+import { BehaviorSubject, Subject, Observable, of as observableOf } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 
 
@@ -14,17 +17,34 @@ const LABELSET_DATA = JSON.stringify([
     {ID: 7, description: 'label 6', parent_id: 2, labelset_id: 1, children: []}
   ]);
 
+interface LabelsetsResponse {
+    labelsets: LabelSet[];
+}
+
+interface LabelsetResponse {
+    labelset: LabelSet;
+}
 
 @Injectable()
 export class DataService {
     username: string;
     dataChange = new BehaviorSubject<LabelTemplateNode[]>([]);
 
-    constructor() {
+    labelsets: Array<LabelSet>;
+    labelsetsChanged = new Subject<LabelSet[]>();
+
+    apiAddr = 'http://localhost:65432/api/v1';
+
+    constructor(
+        private http: HttpClient
+    ) {
         this.username = "todo in dataservice";
+        this.labelsets = new Array<LabelSet>();
+
         this.initializeLabelset();
     }
 
+    // Username methods
     setUsername(newUser: string) {
         this.username = newUser;
     }
@@ -34,6 +54,52 @@ export class DataService {
             return false;
         }
         return true;
+    }
+
+    // Labelset methods:
+    fetchLabelSets() {
+        const url = this.apiAddr + '/labelset';
+        return this.http.get<LabelsetsResponse>(url).pipe(
+            tap(
+                data => {
+                    this.labelsets = data.labelsets.map(x => new LabelSet(x));
+                    console.log(this.labelsets);
+                    this.labelsetsChanged.next(this.labelsets.slice());
+                    return 'labelset list received';
+                }
+            ));
+    }
+
+    fetchLabelSet(id: number) {
+        const url = this.apiAddr + '/labelset/labels';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+
+        return this.http.get<LabelsetResponse>(url, options).pipe(
+            tap(
+                data => {
+                    // console.log(data.labelset);
+                    const newData = this.buildNestedObject(data.labelset.labels);
+                    // Notify the change.
+                    this.dataChange.next(newData);
+                    return data.labelset;
+                }
+            ));
+    }
+
+    createLabelSet() {
+        const labelset = new LabelSet();
+        const url = this.apiAddr + '/labelset';
+        return this.http.post<LabelsetResponse>(url, labelset).pipe(
+            tap(
+                (data) => {
+                    const newData = this.buildNestedObject(data.labelset.labels);
+                    // Notify the change.
+                    this.dataChange.next(newData);
+                    return data.labelset;
+        }));
     }
 
     get labelsetData(): LabelTemplateNode[] { return this.dataChange.value; }
@@ -52,16 +118,19 @@ export class DataService {
     }
 
     buildNestedObject(dataObject: Array<Object>): LabelTemplateNode[] {
+        if (!dataObject) {
+            return new Array<LabelTemplateNode>();
+        }
         return dataObject.reduce<LabelTemplateNode[]>((accumulator, key) => {
             const currentNode = new LabelTemplateNode(key);
             if (currentNode.parent_id <= 0) {
-            const children = this.findLabeltemplateChildren(currentNode.children, dataObject);
-            if (children.length > 0) {
-                currentNode.children = children;
-            } else {
-                currentNode.children = null;
-            }
-            return accumulator.concat(currentNode);
+                const children = this.findLabeltemplateChildren(currentNode.children, dataObject);
+                if (children.length > 0) {
+                    currentNode.children = children;
+                } else {
+                    currentNode.children = null;
+                }
+                return accumulator.concat(currentNode);
             }
             return accumulator;
 
@@ -69,7 +138,7 @@ export class DataService {
     }
 
     findLabeltemplateChildren(children_ids: Array<{ID: number}>, dataArray: Array<Object>): LabelTemplateNode[] {
-            const children_IDs = children_ids.reduce((accumulator, key) => {
+        const children_IDs = children_ids.reduce((accumulator, key) => {
             return accumulator.concat(key.ID);
         }, []);
 
