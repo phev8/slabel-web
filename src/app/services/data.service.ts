@@ -102,6 +102,15 @@ export class DataService {
         }));
     }
 
+    deleteLabelSet(id: number) {
+        const url = this.apiAddr + '/labelset';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+        return this.http.delete(url, options);
+    }
+
     get labelsetData(): LabelTemplateNode[] { return this.dataChange.value; }
 
 

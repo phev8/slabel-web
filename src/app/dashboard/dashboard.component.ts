@@ -39,5 +39,15 @@ export class DashboardComponent implements OnInit {
     return true;
   }
 
+  deleteLabelset(id: number) {
+    if (confirm('Do you really want to delete this labelset? This would also delete all of the label tree stored in this set.')) {
+      this.dataService.deleteLabelSet(id).subscribe(
+        () => {
+          this.dataService.fetchLabelSets().subscribe();
+        }
+      );
+    }
+  }
+
 
 }

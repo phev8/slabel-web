@@ -27,7 +27,7 @@
                         <mat-icon matTooltip="Last updated at" fontSet="far" fontIcon="fa-calendar-alt"></mat-icon>
                         {{ labelset.UpdatedAt | date }}
                     </p>
-                    <button mat-icon-button matTooltip="Last updated at">
+                    <button mat-icon-button  color="basic" matTooltip="Delete label set" (click)="deleteLabelset(labelset.ID)">
                         <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
                     </button>
                     <mat-divider></mat-divider>
