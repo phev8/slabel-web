@@ -102,6 +102,18 @@ export class DataService {
         }));
     }
 
+    updateLabelSet(ls: LabelSet) {
+        const url = this.apiAddr + '/labelset';
+        return this.http.put<LabelsetResponse>(url, ls).pipe(
+            tap(
+                (data) => {
+                    const newData = this.buildNestedObject(data.labelset.labels);
+                    // Notify the change.
+                    this.dataChange.next(newData);
+                    return data.labelset;
+        }));
+    }
+
     deleteLabelSet(id: number) {
         const url = this.apiAddr + '/labelset';
         const params = new HttpParams().set('id', id.toString());

@@ -1,5 +1,6 @@
 <div class="container-fluid component">
     <h2>Label Set Editor</h2>
+    <p *ngIf="currentLabelset">Last updated {{ currentLabelset.UpdatedAt | date:'medium' }}</p>
     <div class="row">
         <div class="col-8">
             <a routerLink="/dashboard" mat-raised-button class="btn">Back</a>
@@ -9,12 +10,18 @@
         <div class="col-12 cont mat-elevation-z2">
             <div class="row">
             <div class="col-12 col-md-4">
-            <mat-form-field class="full-width-widget">
-                <input matInput placeholder="Name of the label set" [(ngModel)]="labelsetName">
+            <mat-spinner *ngIf="!currentLabelset" ></mat-spinner>
+
+            <mat-form-field *ngIf="currentLabelset"  class="full-width-widget">
+                <input matInput placeholder="Name of the label set" [(ngModel)]="labelSetName">
             </mat-form-field>
             </div>
             <div class="col-12 col-md-2">
-                <button mat-raised-button color="primary">Save</button>
+                <button *ngIf="isNameChangedBtnDisabled()" mat-raised-button color="primary" (click)="saveLabelSetName()" disabled>Save</button>
+                <button *ngIf="!isNameChangedBtnDisabled()" mat-raised-button color="primary" (click)="saveLabelSetName()">Save</button>
+            </div>
+            <div class="col-5">
+                <mat-spinner *ngIf="nameUpdating" ></mat-spinner>
             </div>
         </div>
         </div>

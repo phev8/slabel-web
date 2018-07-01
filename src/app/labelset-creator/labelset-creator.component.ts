@@ -6,7 +6,7 @@ import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 import { Observable, of as observableOf } from 'rxjs';
 
 import { DataService } from '../services/data.service';
-import { LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
+import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
 
 
 
@@ -27,8 +27,10 @@ export class LabelsetCreatorComponent implements OnInit {
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
   nestedNodeMap = new Map<LabelTemplateNode, LabelTemplateFlatNode>();
 
-  labelsetName = 'test';
+  currentLabelset: LabelSet;
+  labelSetName = '';
   labelSetID = 0;
+  nameUpdating = false;
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<LabelTemplateFlatNode>(false /* if multiple */);
@@ -61,12 +63,20 @@ export class LabelsetCreatorComponent implements OnInit {
         this.labelSetID = +params['id'];
         console.log(this.labelSetID);
         if (!this.labelSetID) {
-          console.log('TODO: create new labelset and get id');
           this.dataService.createLabelSet().subscribe(
-            (ls) => { this.labelSetID = ls.labelset.ID; }
+            (ls) => {
+              this.currentLabelset = ls.labelset;
+              this.labelSetName = this.currentLabelset.name;
+              this.labelSetID = ls.labelset.ID;
+            }
           );
         } else {
-          this.dataService.fetchLabelSet(this.labelSetID).subscribe();
+          this.dataService.fetchLabelSet(this.labelSetID).subscribe(
+            (data) => {
+              this.currentLabelset = data.labelset;
+              this.labelSetName = this.currentLabelset.name;
+            }
+          );
         }
       }
     );
@@ -147,6 +157,26 @@ export class LabelsetCreatorComponent implements OnInit {
     } else {
       this.treeControl.expand(node);
     }
+  }
+
+  isNameChangedBtnDisabled(): boolean {
+    if (!this.currentLabelset) {
+      return true;
+    }
+    return this.labelSetName === this.currentLabelset.name;
+  }
+
+  saveLabelSetName() {
+    // Update labelset
+    this.currentLabelset.name = this.labelSetName;
+    this.nameUpdating = true;
+    this.dataService.updateLabelSet(this.currentLabelset).subscribe(
+      (data) => {
+        this.currentLabelset = data.labelset;
+        this.labelSetName = this.currentLabelset.name;
+        this.nameUpdating = false;
+      }
+    );
   }
 
   saveNode(node: LabelTemplateFlatNode, description: string) {

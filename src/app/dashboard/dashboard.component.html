@@ -27,6 +27,9 @@
                         <mat-icon matTooltip="Last updated at" fontSet="far" fontIcon="fa-calendar-alt"></mat-icon>
                         {{ labelset.UpdatedAt | date }}
                     </p>
+                    <a mat-icon-button [routerLink]="['/labelset-editor', labelset.ID]"  color="basic" matTooltip="Edit label set" >
+                        <mat-icon fontSet="far" fontIcon="fa-edit"></mat-icon>
+                    </a>
                     <button mat-icon-button  color="basic" matTooltip="Delete label set" (click)="deleteLabelset(labelset.ID)">
                         <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
                     </button>
