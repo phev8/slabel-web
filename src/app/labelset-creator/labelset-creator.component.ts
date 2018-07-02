@@ -182,12 +182,19 @@ export class LabelsetCreatorComponent implements OnInit {
   saveNode(node: LabelTemplateFlatNode, description: string) {
     const nestedNode = this.flatNodeMap.get(node);
     nestedNode.description = description;
-    console.log(nestedNode); // TODO: call backend
+    nestedNode.labelset_id = this.currentLabelset.ID;
+    nestedNode.children = null;
+    this.dataService.createLabelTemplateItem(nestedNode).subscribe();
   }
 
   deleteItem(node: LabelTemplateFlatNode) {
-    // TODO: confirm if really to remove that and subnodes
-    // TODO: call backend to remove node
+    if (confirm('Do you really want to delete the node and its full subtree?')) {
+      this.dataService.deleteLabelTemplateItem(node.ID).subscribe(
+        () => {
+          this.dataService.fetchLabelSet(this.labelSetID).subscribe();
+        }
+      );
+    }
   }
 
 }

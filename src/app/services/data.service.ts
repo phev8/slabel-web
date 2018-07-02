@@ -180,4 +180,31 @@ export class DataService {
         parent.children = new Array<LabelTemplateNode>();
         this.dataChange.next(this.labelsetData);
     }
+
+    createLabelTemplateItem(label: LabelTemplateNode) {
+        const url = this.apiAddr + '/labelset/label';
+        return this.http.post<LabelsetResponse>(url, label).pipe(
+            tap(
+                (data) => {
+                    this.fetchLabelSet(label.labelset_id).subscribe();
+        }));
+    }
+
+    updateLabelTemplateItem(label: LabelTemplateNode) {
+        const url = this.apiAddr + '/labelset/label';
+        return this.http.put<LabelsetResponse>(url, label).pipe(
+            tap(
+                (data) => {
+                    this.fetchLabelSet(label.labelset_id).subscribe();
+        }));
+    }
+
+    deleteLabelTemplateItem(id: number) {
+        const url = this.apiAddr + '/labelset/label';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+        return this.http.delete(url, options);
+    }
 }
