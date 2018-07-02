@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
+import { LabelSet, LabelTemplateNode } from '../models/labelset.model';
+import { Session, Label } from '../models/session.model';
 import { BehaviorSubject, Subject, Observable, of as observableOf } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -25,6 +26,14 @@ interface LabelsetResponse {
     labelset: LabelSet;
 }
 
+interface SessionsResponse {
+    sessions: Session[];
+}
+
+interface SessionResponse {
+    session: Session;
+}
+
 @Injectable()
 export class DataService {
     username: string;
@@ -32,6 +41,12 @@ export class DataService {
 
     labelsets: Array<LabelSet>;
     labelsetsChanged = new Subject<LabelSet[]>();
+
+    sessions: Array<Session>;
+    sessionsChanged = new Subject<Session[]>();
+
+    currentSession: Session;
+    currentSessionChanged = new Subject<Session>();
 
     apiAddr = 'http://localhost:65432/api/v1';
 
@@ -207,4 +222,69 @@ export class DataService {
         };
         return this.http.delete(url, options);
     }
+
+    // Session methods:
+    fetchSessions() {
+        const url = this.apiAddr + '/session';
+        return this.http.get<SessionsResponse>(url).pipe(
+            tap(
+                data => {
+                    this.sessions = data.sessions.map(x => new Session(x));
+                    this.sessionsChanged.next(this.sessions.slice());
+                    return 'session list received';
+                }
+            ));
+    }
+
+    fetchSession(id: number) {
+        const url = this.apiAddr + '/session/labels';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+
+        return this.http.get<SessionResponse>(url, options).pipe(
+            tap(
+                data => {
+                    this.currentSession = data.session;
+                    // Notify the change.
+                    this.currentSessionChanged.next(this.currentSession);
+                    return data.session;
+                }
+            ));
+    }
+
+    createSession(session: Session) {
+        const url = this.apiAddr + '/session';
+        return this.http.post<SessionResponse>(url, session).pipe(
+            tap(
+                (data) => {
+                    this.currentSession = data.session;
+                    // Notify the change.
+                    this.currentSessionChanged.next(this.currentSession);
+                    return data.session;
+        }));
+    }
+
+    updateSession(ls: LabelSet) {
+        const url = this.apiAddr + '/session';
+        return this.http.put<SessionResponse>(url, ls).pipe(
+            tap(
+                (data) => {
+                    this.currentSession = data.session;
+                    // Notify the change.
+                    this.currentSessionChanged.next(this.currentSession);
+                    return data.session;
+        }));
+    }
+
+    deleteSession(id: number) {
+        const url = this.apiAddr + '/session';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+        return this.http.delete(url, options);
+    }
+
 }

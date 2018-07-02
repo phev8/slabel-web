@@ -196,5 +196,4 @@ export class LabelsetCreatorComponent implements OnInit {
       );
     }
   }
-
 }
