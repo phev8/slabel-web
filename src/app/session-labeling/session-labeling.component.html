@@ -34,8 +34,26 @@
         </div>
         <div class="col-12 col-md-5 cont">
             <div class="mat-elevation-z2 cont">
-                test
+                <mat-form-field class="full-width-widget">
+                    <input matInput placeholder="Subject" [(ngModel)]="subjectName">
+                </mat-form-field>
+                <mat-slide-toggle [(ngModel)]="realTimeMode">Real time labeling</mat-slide-toggle>
+                <div *ngIf="realTimeMode" class="row">
+                    <div class="col-12">
+                        <button *ngIf="labelEventStarted" class="btn" mat-raised-button color="primary" disabled>Start</button>
+                        <button *ngIf="!labelEventStarted" class="btn" mat-raised-button color="primary" (click)="startLabelEvent()">Start</button>
+                        <button *ngIf="!labelEventStarted" class="btn" mat-raised-button color="accent" disabled>Stop</button>
+                        <button *ngIf="labelEventStarted" class="btn" mat-raised-button color="accent" (click)="stopLabelEvent()">Stop</button>
+                    </div>
+                    <div class="col-12">
+                        Start: {{ labelStart }}
+                        End: {{ labelEnd }}
+                    </div>
 
+                </div>
+                <div *ngIf="!realTimeMode" class="row">
+                    <button mat-raised-button (click)="addNewLabel()">add test label</button>
+                </div>
             </div>
         </div>
         <div class="col-12 col-md-7 cont">
@@ -83,54 +101,47 @@
             </div>
         </div>
     </div>
-</div>
+    <div class="col-12">
+        <div class="mat-elevation-z2">
+            <table mat-table [dataSource]="sessionLabelsDataSource" class="full-width-widget">
+                <ng-container matColumnDef="label">
+                <th mat-header-cell *matHeaderCellDef> Description </th>
+                <td style="max-width: 300px;" mat-cell *matCellDef="let label"> {{label.description}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="start">
+                <th mat-header-cell *matHeaderCellDef> Start </th>
+                <td mat-cell *matCellDef="let label"> {{label.start}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="end">
+                <th mat-header-cell *matHeaderCellDef> End </th>
+                <td mat-cell *matCellDef="let label"> {{label.end}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef> Subject </th>
+                <td mat-cell *matCellDef="let label"> {{label.subject}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="created_by">
+                <th mat-header-cell *matHeaderCellDef> By </th>
+                <td mat-cell *matCellDef="let label"> {{label.created_by}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Action </th>
+                <td mat-cell *matCellDef="let label">
+                    <button mat-icon-button (click)="deleteLabel(label.ID)">
+                        <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
+                    </button>
+                </td>
+                </ng-container>
 
-
-    <button mat-raised-button (click)="addNewLabel()">add test label</button>
-
-<div class="mat-elevation-z8">
-    <table mat-table [dataSource]="sessionLabelsDataSource" class="full-width-widget">
-        <ng-container matColumnDef="label">
-        <th mat-header-cell *matHeaderCellDef> Description </th>
-        <td mat-cell *matCellDef="let label"> {{label.description}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="start">
-        <th mat-header-cell *matHeaderCellDef> Start </th>
-        <td mat-cell *matCellDef="let label"> {{label.start}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="end">
-        <th mat-header-cell *matHeaderCellDef> End </th>
-        <td mat-cell *matCellDef="let label"> {{label.end}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="subject">
-        <th mat-header-cell *matHeaderCellDef> Subject </th>
-        <td mat-cell *matCellDef="let label"> {{label.subject}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="created_by">
-        <th mat-header-cell *matHeaderCellDef> By </th>
-        <td mat-cell *matCellDef="let label"> {{label.created_by}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef> Action </th>
-        <td mat-cell *matCellDef="let label">
-            <button mat-icon-button (click)="deleteLabel(label.ID)">
-                <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
-            </button>
-        </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+        </div>
+    </div>
 </div>

@@ -10,6 +10,7 @@ import { DataService } from '../services/data.service';
 import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
 import { Session, Label } from '../models/session.model';
 
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-session-labeling',
@@ -31,7 +32,12 @@ export class SessionLabelingComponent implements OnInit {
   sessionID = 0;
   nameUpdating = false;
 
+  realTimeMode = true;
+  labelEventStarted = false;
   currentLabelDescription = '';
+  subjectName = '';
+  labelStart = '';
+  labelEnd = '';
 
   treeControl: FlatTreeControl<LabelTemplateFlatNode>;
   treeFlattener: MatTreeFlattener<LabelTemplateNode, LabelTemplateFlatNode>;
@@ -129,6 +135,11 @@ export class SessionLabelingComponent implements OnInit {
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
   todoItemSelectionToggle(node: LabelTemplateFlatNode): void {
+    if (this.labelEventStarted) {
+      if (!confirm('Label event is running, do you really want to change the current label (this will be saved at the end of the event)?')) {
+        return;
+      }
+    }
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
@@ -145,8 +156,6 @@ export class SessionLabelingComponent implements OnInit {
       });
       this.currentLabelDescription = this.currentLabelDescription.slice(0, -1);
       this.currentLabelDescription += ']';
-      console.log(node);
-      console.log(treePath);
     }
   }
 
@@ -194,13 +203,28 @@ export class SessionLabelingComponent implements OnInit {
     );
   }
 
+  startLabelEvent() {
+    if (this.subjectName === '') {
+      alert('Please enter a subject name, before start to record an event.');
+      return;
+    }
+    this.labelEventStarted = true;
+    this.labelStart = moment().unix().toString();
+  }
+
+  stopLabelEvent() {
+    this.labelEventStarted = false;
+    this.labelEnd = moment().unix().toString();
+    this.addNewLabel();
+  }
+
   addNewLabel() {
     const newLabel = new Label(
       {
-        description: 'testlabel',
-        subject: 'testsubject',
-        start: 15.2,
-        end: 17.3,
+        description: this.currentLabelDescription,
+        subject: this.subjectName,
+        start: parseFloat(this.labelStart),
+        end: parseFloat(this.labelEnd),
         created_by: this.dataService.username,
         session_id: this.currentSession.ID
       }
