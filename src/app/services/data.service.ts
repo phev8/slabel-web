@@ -276,12 +276,16 @@ export class DataService {
         }));
     }
 
-    removeLabel(id: number) {
+    removeLabel(id: number, currentSessionID: number) {
         const url = this.apiAddr + '/session/label';
         const params = new HttpParams().set('id', id.toString());
         const options = {
             params: params
         };
-        return this.http.delete(url, options);
+        return this.http.delete(url, options).pipe(
+            tap(
+                (data) => {
+                    this.fetchSession(currentSessionID).subscribe();
+        }));
     }
 }

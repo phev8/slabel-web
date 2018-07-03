@@ -1,8 +1,9 @@
-import { Component,  OnInit } from '@angular/core';
+import { Component,  OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Observable, of as observableOf } from 'rxjs';
 
 import { DataService } from '../services/data.service';
@@ -16,6 +17,11 @@ import { Session, Label } from '../models/session.model';
   styleUrls: ['./session-labeling.component.scss']
 })
 export class SessionLabelingComponent implements OnInit {
+  displayedColumns: string[] = ['label', 'start', 'end', 'subject', 'created_by', 'action'];
+  sessionLabelsDataSource = new MatTableDataSource<Label>();
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   labelsets: Array<LabelSet>;
   selectedLabelSet: number;
 
@@ -24,6 +30,8 @@ export class SessionLabelingComponent implements OnInit {
   sessionDate = new Date();
   sessionID = 0;
   nameUpdating = false;
+
+  currentLabelDescription = '';
 
   treeControl: FlatTreeControl<LabelTemplateFlatNode>;
   treeFlattener: MatTreeFlattener<LabelTemplateNode, LabelTemplateFlatNode>;
@@ -65,6 +73,7 @@ export class SessionLabelingComponent implements OnInit {
         this.currentSession = data;
         this.sessionName = this.currentSession.session_name;
         this.sessionDate = this.currentSession.start_date;
+        this.sessionLabelsDataSource.data = this.currentSession.labels.slice().reverse();
       }
     );
 
@@ -76,6 +85,8 @@ export class SessionLabelingComponent implements OnInit {
         this.dataService.fetchSession(this.sessionID).subscribe();
       }
     );
+
+    this.sessionLabelsDataSource.paginator = this.paginator;
   }
 
   changeLabelSet(id: number) {
@@ -123,6 +134,37 @@ export class SessionLabelingComponent implements OnInit {
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants)
       : this.checklistSelection.deselect(...descendants);
+
+    if (this.checklistSelection.isSelected(node)) {
+      const treePath = this.getLabelTree([node]);
+
+      this.currentLabelDescription = '[';
+      treePath.forEach(label => {
+        this.currentLabelDescription +=
+          '{"id":"' + label.ID.toString() + '","description":"' + label.description + '"},';
+      });
+      this.currentLabelDescription = this.currentLabelDescription.slice(0, -1);
+      this.currentLabelDescription += ']';
+      console.log(node);
+      console.log(treePath);
+    }
+  }
+
+  getLabelTree(selectedNodes: LabelTemplateFlatNode[]): LabelTemplateFlatNode[] {
+    const parent = this.findParent(selectedNodes[selectedNodes.length - 1]);
+    if (!parent) {
+      return selectedNodes;
+    }
+    selectedNodes.push(parent);
+    return this.getLabelTree(selectedNodes);
+
+  }
+
+  findParent(node: LabelTemplateFlatNode): LabelTemplateFlatNode {
+    if (node.parent_id === 0) {
+      return null;
+    }
+    return this.treeControl.dataNodes.find(x => x.ID === node.parent_id);
   }
 
   toggleNode(node) {
@@ -150,5 +192,26 @@ export class SessionLabelingComponent implements OnInit {
         this.nameUpdating = false;
       }
     );
+  }
+
+  addNewLabel() {
+    const newLabel = new Label(
+      {
+        description: 'testlabel',
+        subject: 'testsubject',
+        start: 15.2,
+        end: 17.3,
+        created_by: this.dataService.username,
+        session_id: this.currentSession.ID
+      }
+    );
+
+    this.dataService.createLabel(newLabel).subscribe();
+  }
+
+  deleteLabel(id: number) {
+    if (confirm('Do you realy want to remove this label?')) {
+      this.dataService.removeLabel(id, this.sessionID).subscribe();
+    }
   }
 }
