@@ -94,7 +94,6 @@ export class DataService {
                 data => {
                     const newData = this.buildNestedObject(data.labelset.labels);
                     // Notify the change.
-                    //dataChange = new BehaviorSubject<LabelTemplateNode[]>([]);
                     this.dataChange.next(newData);
                     return data.labelset;
                 }
@@ -247,7 +246,7 @@ export class DataService {
         }));
     }
 
-    updateSession(ls: LabelSet) {
+    updateSession(ls: Session) {
         const url = this.apiAddr + '/session';
         return this.http.put<SessionResponse>(url, ls).pipe(
             tap(

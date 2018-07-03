@@ -1,4 +1,5 @@
 import { Component,  OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -6,6 +7,7 @@ import { Observable, of as observableOf } from 'rxjs';
 
 import { DataService } from '../services/data.service';
 import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/labelset.model';
+import { Session, Label } from '../models/session.model';
 
 
 @Component({
@@ -16,6 +18,12 @@ import { LabelSet, LabelTemplateNode, LabelTemplateFlatNode } from '../models/la
 export class SessionLabelingComponent implements OnInit {
   labelsets: Array<LabelSet>;
   selectedLabelSet: number;
+
+  currentSession: Session;
+  sessionName = '';
+  sessionDate = new Date();
+  sessionID = 0;
+  nameUpdating = false;
 
   treeControl: FlatTreeControl<LabelTemplateFlatNode>;
   treeFlattener: MatTreeFlattener<LabelTemplateNode, LabelTemplateFlatNode>;
@@ -30,7 +38,8 @@ export class SessionLabelingComponent implements OnInit {
   checklistSelection = new SelectionModel<LabelTemplateFlatNode>(false /* if multiple */);
 
   constructor(
-    private dataService: DataService
+    private dataService: DataService,
+    private route: ActivatedRoute
   ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this._getLevel,
       this._isExpandable, this._getChildren);
@@ -51,7 +60,22 @@ export class SessionLabelingComponent implements OnInit {
       }
     );
 
+    this.dataService.currentSessionChanged.subscribe(
+      (data) => {
+        this.currentSession = data;
+        this.sessionName = this.currentSession.session_name;
+        this.sessionDate = this.currentSession.start_date;
+      }
+    );
+
     this.dataService.fetchLabelSets().subscribe();
+
+    this.route.params.subscribe(
+      (params) => {
+        this.sessionID = +params['id'];
+        this.dataService.fetchSession(this.sessionID).subscribe();
+      }
+    );
   }
 
   changeLabelSet(id: number) {
@@ -107,5 +131,24 @@ export class SessionLabelingComponent implements OnInit {
     } else {
       this.treeControl.expand(node);
     }
+  }
+
+  isNameChangedBtnDisabled(): boolean {
+    if (!this.currentSession) {
+      return true;
+    }
+    return this.sessionName === this.currentSession.session_name && this.sessionDate === this.currentSession.start_date;
+  }
+
+  saveSessionName() {
+    // Update labelset
+    this.currentSession.session_name = this.sessionName;
+    this.currentSession.start_date = this.sessionDate;
+    this.nameUpdating = true;
+    this.dataService.updateSession(this.currentSession).subscribe(
+      (data) => {
+        this.nameUpdating = false;
+      }
+    );
   }
 }

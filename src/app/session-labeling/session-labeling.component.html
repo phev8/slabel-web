@@ -1,3 +1,40 @@
+<div class="container-fluid component">
+    <h2>Labeling Session</h2>
+    <p *ngIf="currentLabelset">Last updated {{ currentSession.UpdatedAt | date:'medium' }}</p>
+    <div class="row">
+        <div class="col-8">
+            <a routerLink="/dashboard" mat-raised-button class="btn">Back</a>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-12 cont mat-elevation-z2">
+            <div class="row">
+                <div class="col-12 col-md-4">
+                    <mat-spinner *ngIf="!currentSession" ></mat-spinner>
+
+                    <mat-form-field *ngIf="currentSession"  class="full-width-widget">
+                        <input matInput placeholder="Name of the session" [(ngModel)]="sessionName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-4">
+                    <mat-form-field *ngIf="currentSession" class="input-field">
+                        <input matInput [matDatepicker]="picker" placeholder="Session date" [(ngModel)]="sessionDate">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button *ngIf="isNameChangedBtnDisabled()" mat-raised-button color="primary" disabled>Save</button>
+                    <button *ngIf="!isNameChangedBtnDisabled()" mat-raised-button color="primary" (click)="saveSessionName()">Save</button>
+                </div>
+                <div class="col-5">
+                    <mat-spinner *ngIf="nameUpdating" ></mat-spinner>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <p>
     session labeling works
 </p>
