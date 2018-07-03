@@ -2,13 +2,22 @@
     session labeling works
 </p>
 
+<mat-form-field>
+    <mat-select [(value)]="selectedLabelSet" (selectionChange)="changeLabelSet($event.value)">
+        <mat-option *ngFor="let labelset of labelsets" [value]="labelset.ID">
+                {{labelset.ID}}: {{labelset.name}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
         (click)="todoItemSelectionToggle(node)">
             <div [ngClass]="{'selected-node': checklistSelection.isSelected(node), 'node': true}">
-            <button mat-icon-button disabled></button>
-            <mat-icon *ngIf="!checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-circle"></mat-icon>
-            <mat-icon *ngIf="checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-check-circle"></mat-icon>
+            <button mat-icon-button disabled>
+                <mat-icon *ngIf="!checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-circle"></mat-icon>
+                <mat-icon *ngIf="checklistSelection.isSelected(node)" fontSet="far" fontIcon="fa-check-circle"></mat-icon>
+            </button>
             {{node.description}} <small>(ID: {{node.ID}})</small>
             <!--<mat-icon *ngIf="checklistSelection.isSelected(node)" color="accent" fontSet="far" fontIcon="fa-check"></mat-icon>-->
         </div>

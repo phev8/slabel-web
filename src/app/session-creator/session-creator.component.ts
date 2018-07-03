@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
+import { Session } from '../models/session.model';
+import { DataService } from '../services/data.service';
+
 import * as moment from 'moment';
 
 @Component({
@@ -10,14 +13,18 @@ import * as moment from 'moment';
 })
 export class SessionCreatorComponent implements OnInit {
   sessionForm = new FormGroup ({
-    name: new FormControl(),
+    session_name: new FormControl(),
     start_date: new FormControl(),
   });
+
+  constructor(
+    private dataService: DataService
+  ) {}
 
   ngOnInit() {
     this.sessionForm.patchValue({
       start_date: new Date(),
-      name: this.getTimeString()
+      session_name: this.getTimeString()
     });
   }
 
@@ -26,7 +33,10 @@ export class SessionCreatorComponent implements OnInit {
   }
 
   createSession() {
-    console.log(this.sessionForm.value);
+    const session = new Session(
+      this.sessionForm.value
+    );
+    this.dataService.createSession(session).subscribe();
   }
 
 }

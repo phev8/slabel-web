@@ -20,9 +20,14 @@ export class DashboardComponent implements OnInit {
         this.labelsets = data;
       }
     );
+    this.dataService.sessionsChanged.subscribe(
+      (data) => {
+        this.sessions = data;
+      }
+    );
 
     this.dataService.fetchLabelSets().subscribe();
-
+    this.dataService.fetchSessions().subscribe();
   }
 
   hasSessions(): boolean {
@@ -47,6 +52,20 @@ export class DashboardComponent implements OnInit {
         }
       );
     }
+  }
+
+  deleteSession(id: number) {
+    if (confirm('Do you really want to delete this session? This would also delete all of the labels stored in this session.')) {
+      this.dataService.deleteSession(id).subscribe(
+        () => {
+          this.dataService.fetchSessions().subscribe();
+        }
+      );
+    }
+  }
+
+  downloadLabels(id: number) {
+    console.log('TODO');
   }
 
 

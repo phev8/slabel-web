@@ -17,9 +17,12 @@ export class LabelTemplateNode {
     parent_id: number;
     labelset_id: number;
 
-    constructor(object?: {}) {
+    constructor(object?: any) {
         if (object) {
-            Object.assign(this, object);
+            Object.assign(this, {children: []}, object);
+            if (object.children && object.children.length > 0) {
+                this.children = object.children.map(x => new LabelTemplateNode(x));
+            }
         }
     }
 }

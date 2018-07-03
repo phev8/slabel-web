@@ -55,8 +55,6 @@ export class DataService {
     ) {
         this.username = "todo in dataservice";
         this.labelsets = new Array<LabelSet>();
-
-        this.initializeLabelset();
     }
 
     // Username methods
@@ -78,7 +76,6 @@ export class DataService {
             tap(
                 data => {
                     this.labelsets = data.labelsets.map(x => new LabelSet(x));
-                    console.log(this.labelsets);
                     this.labelsetsChanged.next(this.labelsets.slice());
                     return 'labelset list received';
                 }
@@ -95,9 +92,9 @@ export class DataService {
         return this.http.get<LabelsetResponse>(url, options).pipe(
             tap(
                 data => {
-                    // console.log(data.labelset);
                     const newData = this.buildNestedObject(data.labelset.labels);
                     // Notify the change.
+                    //dataChange = new BehaviorSubject<LabelTemplateNode[]>([]);
                     this.dataChange.next(newData);
                     return data.labelset;
                 }
@@ -112,6 +109,7 @@ export class DataService {
                 (data) => {
                     const newData = this.buildNestedObject(data.labelset.labels);
                     // Notify the change.
+
                     this.dataChange.next(newData);
                     return data.labelset;
         }));
@@ -141,18 +139,6 @@ export class DataService {
     get labelsetData(): LabelTemplateNode[] { return this.dataChange.value; }
 
 
-    initializeLabelset() {
-        // Parse the string to json object.
-        const dataObject = JSON.parse(LABELSET_DATA);
-
-        // Build the tree nodes from Json object. The result is a list of `FileNode` with nested
-        //     file node as children.
-        const data = this.buildNestedObject(dataObject);
-
-        // Notify the change.
-        this.dataChange.next(data);
-    }
-
     buildNestedObject(dataObject: Array<Object>): LabelTemplateNode[] {
         if (!dataObject) {
             return new Array<LabelTemplateNode>();
@@ -169,7 +155,6 @@ export class DataService {
                 return accumulator.concat(currentNode);
             }
             return accumulator;
-
         }, []);
     }
 
@@ -188,12 +173,7 @@ export class DataService {
                 children.push(cItem);
             }
         });
-        return children;
-    }
-
-    insertLabelTemplateItem(parent: LabelTemplateNode) {
-        parent.children = new Array<LabelTemplateNode>();
-        this.dataChange.next(this.labelsetData);
+        return children.splice(0, children.length);
     }
 
     createLabelTemplateItem(label: LabelTemplateNode) {
@@ -262,6 +242,7 @@ export class DataService {
                     this.currentSession = data.session;
                     // Notify the change.
                     this.currentSessionChanged.next(this.currentSession);
+                    this.fetchSessions().subscribe();
                     return data.session;
         }));
     }
@@ -287,4 +268,21 @@ export class DataService {
         return this.http.delete(url, options);
     }
 
+    createLabel(label: Label) {
+        const url = this.apiAddr + '/session/label';
+        return this.http.post<SessionResponse>(url, label).pipe(
+            tap(
+                (data) => {
+                    this.fetchSession(label.session_id).subscribe();
+        }));
+    }
+
+    removeLabel(id: number) {
+        const url = this.apiAddr + '/session/label';
+        const params = new HttpParams().set('id', id.toString());
+        const options = {
+            params: params
+        };
+        return this.http.delete(url, options);
+    }
 }

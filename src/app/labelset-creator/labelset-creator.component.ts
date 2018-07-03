@@ -45,15 +45,16 @@ export class LabelsetCreatorComponent implements OnInit {
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     dataService.dataChange.subscribe(data => {
+      const currentData = [];
       data.forEach((node) => {
-        node = this.addNewNodeInput(node);
+        currentData.push(this.addNewNodeInput(node));
       });
       if (data.length > 0 && data[data.length - 1].ID !== 0) {
-        data.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
+        currentData.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
       } else if (data.length <= 0) {
-        data.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
+        currentData.push(new LabelTemplateNode({ID: 0, description: '', parent_id: 0, labelset_id: this.labelSetID, children: []}));
       }
-      return this.dataSource.data = data;
+      return this.dataSource.data = currentData;
     });
   }
 
@@ -83,28 +84,31 @@ export class LabelsetCreatorComponent implements OnInit {
   }
 
   addNewNodeInput(node: LabelTemplateNode): LabelTemplateNode {
-    if (!node.children) {
-      node.children = new Array<LabelTemplateNode>();
-      node.children.push(
-        new LabelTemplateNode({ID: 0, description: '', parent_id: node.ID, labelset_id: node.labelset_id, children: []})
+    const newNode = Object.assign({}, node);
+    if (!newNode.children) {
+      newNode.children = new Array<LabelTemplateNode>();
+      newNode.children.push(
+        new LabelTemplateNode({ID: 0, description: '', parent_id: newNode.ID, labelset_id: newNode.labelset_id, children: []})
       );
-    } else if (node.children && node.children.length === 0) {
-      node.children.push(
-        new LabelTemplateNode({ID: 0, description: '', parent_id: node.ID, labelset_id: node.labelset_id, children: []})
+    } else if (newNode.children && newNode.children.length === 0) {
+      newNode.children = node.children.slice();
+      newNode.children.push(
+        new LabelTemplateNode({ID: 0, description: '', parent_id: newNode.ID, labelset_id: newNode.labelset_id, children: []})
       );
-    } else if (node.children && node.children.length > 0 ) {
+    } else if (newNode.children && newNode.children.length > 0 ) {
+      newNode.children = new Array<LabelTemplateNode>();
       node.children.forEach( (child) => {
         if (child.ID !== 0) {
-          child = this.addNewNodeInput(child);
+          newNode.children.push(this.addNewNodeInput(child));
         }
       });
-      if (node.children[node.children.length - 1].ID !== 0) {
-        node.children.push(
-          new LabelTemplateNode({ID: 0, description: '', parent_id: node.ID, labelset_id: node.labelset_id, children: []})
+      if (newNode.children[newNode.children.length - 1].ID !== 0) {
+        newNode.children.push(
+          new LabelTemplateNode({ID: 0, description: '', parent_id: newNode.ID, labelset_id: newNode.labelset_id, children: []})
         );
       }
     }
-    return node;
+    return newNode;
   }
 
   transformer = (node: LabelTemplateNode, level: number) => {

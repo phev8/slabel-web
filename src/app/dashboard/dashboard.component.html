@@ -6,13 +6,23 @@
                 <mat-list-item *ngIf="!hasSessions()">
                     <p mat-line>No sessions available yet.</p>
                 </mat-list-item>
-                <mat-list-item *ngFor="let session of session">
-                    <mat-icon mat-list-icon>folder</mat-icon>
-                    <h4 mat-line>{{folder.name}}</h4>
-                    <p mat-line> {{folder.updated | date}} </p>
+                <mat-list-item *ngFor="let session of sessions">
+                    <mat-icon mat-list-icon fontSet="fas" fontIcon="fa-tape"></mat-icon>
+                    <h4 mat-line>{{session.session_name}} <small>(ID: {{ session.ID }})</small> </h4>
+                    <p mat-line> {{session.start_date | date}} </p>
+                    <a mat-icon-button [routerLink]="['/labeling', session.ID]"  color="basic" matTooltip="Labeling for this session" >
+                        <mat-icon fontSet="far" fontIcon="fa-edit"></mat-icon>
+                    </a>
+                    <button mat-icon-button  color="basic" matTooltip="Download labels of this session" (click)="downloadLabels(session.ID)">
+                        <mat-icon fontSet="far" fontIcon="fa-download"></mat-icon>
+                    </button>
+                    <button mat-icon-button  color="basic" matTooltip="Delete session" (click)="deleteSession(session.ID)">
+                        <mat-icon fontSet="far" fontIcon="fa-trash-alt"></mat-icon>
+                    </button>
                     <mat-divider></mat-divider>
                 </mat-list-item>
             </mat-list>
+            <div style="height: 20px;"></div>
             <app-session-creator></app-session-creator>
         </div>
         <div class="col-12 col-sm-6">

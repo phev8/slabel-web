@@ -1,6 +1,6 @@
 export class Session {
     ID: number;
-    name: string;
+    session_name: string;
     start_date: Date;
     labels: Label[];
 
