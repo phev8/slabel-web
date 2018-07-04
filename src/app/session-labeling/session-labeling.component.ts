@@ -135,11 +135,6 @@ export class SessionLabelingComponent implements OnInit {
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
   todoItemSelectionToggle(node: LabelTemplateFlatNode): void {
-    if (this.labelEventStarted) {
-      if (!confirm('Label event is running, do you really want to change the current label (this will be saved at the end of the event)?')) {
-        return;
-      }
-    }
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
@@ -147,6 +142,9 @@ export class SessionLabelingComponent implements OnInit {
       : this.checklistSelection.deselect(...descendants);
 
     if (this.checklistSelection.isSelected(node)) {
+      if (this.realTimeMode) {
+        this.startLabelEvent();
+      }
       const treePath = this.getLabelTree([node]);
 
       this.currentLabelDescription = '[';
@@ -156,7 +154,16 @@ export class SessionLabelingComponent implements OnInit {
       });
       this.currentLabelDescription = this.currentLabelDescription.slice(0, -1);
       this.currentLabelDescription += ']';
+    } else {
+      if (this.realTimeMode) {
+        this.stopLabelEvent();
+      }
     }
+    /*if (this.labelEventStarted) {
+      if (!confirm('Label event is running, do you really want to change the current label (this will be saved at the end of the event)?')) {
+        return;
+      }
+    }*/
   }
 
   getLabelTree(selectedNodes: LabelTemplateFlatNode[]): LabelTemplateFlatNode[] {

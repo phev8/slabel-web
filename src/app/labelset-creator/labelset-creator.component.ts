@@ -189,6 +189,10 @@ export class LabelsetCreatorComponent implements OnInit {
     nestedNode.labelset_id = this.currentLabelset.ID;
     nestedNode.children = null;
     this.dataService.createLabelTemplateItem(nestedNode).subscribe();
+    setTimeout(
+      () => {this.treeControl.expandAll(); },
+      500
+    );
   }
 
   deleteItem(node: LabelTemplateFlatNode) {

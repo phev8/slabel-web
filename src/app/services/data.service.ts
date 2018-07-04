@@ -48,12 +48,12 @@ export class DataService {
     currentSession: Session;
     currentSessionChanged = new Subject<Session>();
 
-    apiAddr = 'http://localhost:65432/api/v1';
+    apiAddr = 'http://dfki-3039.dfki.de:65432/api/v1';
 
     constructor(
         private http: HttpClient
     ) {
-        this.username = "todo in dataservice";
+        // this.username = "todo in dataservice";
         this.labelsets = new Array<LabelSet>();
     }
 

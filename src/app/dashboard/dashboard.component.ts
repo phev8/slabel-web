@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../services/data.service';
 
+
+import * as fs from 'file-saver';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -65,7 +68,13 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadLabels(id: number) {
-    console.log('TODO');
+    this.dataService.fetchSession(id).subscribe(
+      (data) => {
+        const dataStr = JSON.stringify(data.session, null, 2);
+        const blob = new Blob([dataStr], {type: 'text/json;charset=utf-8'});
+        fs.saveAs(blob, data.session.session_name + '.json');
+      }
+    );
   }
 
 

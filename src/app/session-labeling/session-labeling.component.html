@@ -1,6 +1,6 @@
 <div class="container-fluid component">
     <h2>Labeling Session</h2>
-    <p *ngIf="currentLabelset">Last updated {{ currentSession.UpdatedAt | date:'medium' }}</p>
+    <p *ngIf="currentSession">Last updated {{ currentSession.UpdatedAt | date:'medium' }}</p>
     <div class="row">
         <div class="col-8">
             <a routerLink="/dashboard" mat-raised-button class="btn">Back</a>
