@@ -230,6 +230,11 @@ export class SessionLabelingComponent implements OnInit {
       }
     );
 
+    if (newLabel.start > newLabel.end) {
+      alert('End of the label event can\'t be earlier then the start. Label is not saved.');
+      return;
+    }
+
     this.dataService.createLabel(newLabel).subscribe();
   }
 
